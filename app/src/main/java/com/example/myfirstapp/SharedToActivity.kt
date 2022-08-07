@@ -7,7 +7,12 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.widget.TextView
 
-class MyActivity : AppCompatActivity() {
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+
+
+class SharedToActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_activity)
@@ -34,9 +39,11 @@ class MyActivity : AppCompatActivity() {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
             // Update UI to reflect text being shared
 
+            val fullTextDisplay = "This is the URL of the tweet: $it"
+            val newTest = sendGet()
             // Me add:
             findViewById<TextView>(R.id.textViewRecieved).apply {
-                text = it
+                text = fullTextDisplay
             }
         }
     }
@@ -52,5 +59,24 @@ class MyActivity : AppCompatActivity() {
             // Update UI to reflect multiple images being shared
         }
     }
+
+    private fun sendGet(): String {
+        val url = URL("https://publicobject.com/helloworld.txt")
+
+        with(url.openConnection() as HttpURLConnection) {
+            requestMethod = "GET"  // optional default is GET
+
+            println("\nSent 'GET' request to URL : $url; Response Code : $responseCode")
+
+            inputStream.bufferedReader().use() {
+                val stringStart = ""
+                it.readLines().forEach(){
+                    stringStart.plus(it)
+                }
+                return stringStart
+            }
+        }
+    }
+
 
 }
